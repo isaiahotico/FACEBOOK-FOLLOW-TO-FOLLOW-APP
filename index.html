@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PAPERHOUSE INC</title>
-    <!-- Telegram WebApp SDK -->
+    <!-- Telegram SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
@@ -14,162 +15,146 @@
     <script src='//libtl.com/sdk.js' data-zone='10555746' data-sdk='show_10555746'></script>
     
     <style>
-        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
         body { background: #0f172a; color: white; min-height: 100vh; font-family: sans-serif; overflow-x: hidden; }
         .tab-active { border-bottom: 3px solid #38bdf8; color: #38bdf8; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
         #chat-messages::-webkit-scrollbar { width: 4px; }
-        #chat-messages::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        #chat-messages::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 10px; }
     </style>
 </head>
 <body class="pb-24">
 
-    <!-- REAL-TIME TELEGRAM USER BAR (Top Sticky) -->
-    <div id="userBar" class="bg-sky-600 text-white text-[11px] font-black py-2 px-4 sticky top-0 z-[100] text-center uppercase tracking-widest shadow-md">
+    <!-- REAL-TIME USER BAR -->
+    <div id="userBar" class="bg-sky-600 text-white text-[11px] font-black py-2 px-4 sticky top-0 z-[100] text-center uppercase tracking-widest shadow-lg">
         👤 User: Loading...
     </div>
 
     <!-- Header -->
-    <header class="p-4 bg-slate-900 shadow-xl flex justify-between items-center border-b border-slate-700">
-        <h1 class="font-black text-xl text-sky-400 italic tracking-tighter">PAPERHOUSE INC</h1>
+    <header class="p-4 bg-slate-900/80 flex justify-between items-center border-b border-slate-800">
+        <h1 class="font-black text-xl text-sky-400 italic">PAPERHOUSE INC</h1>
         <div class="text-right">
-            <p class="text-[9px] text-gray-500 font-bold uppercase">Balance</p>
+            <p class="text-[9px] text-gray-500 font-bold">BALANCE</p>
             <p id="user-balance" class="text-xl font-black text-green-400">₱0.00</p>
         </div>
     </header>
 
     <main id="app-content" class="p-4">
-        <!-- Loading Spinner -->
-        <div id="loading" class="flex justify-center items-center h-64">
-            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-sky-500"></div>
-        </div>
+        
+        <!-- Home / Tasks View -->
+        <div id="main-view">
+            <!-- Referral Stats -->
+            <div class="glass-card p-5 rounded-3xl mb-6 shadow-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Referral Code</h2>
+                    <span id="my-ref-code" class="text-sky-400 font-black text-lg font-mono">------</span>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div class="bg-slate-950/40 p-2 rounded-2xl">
 
-        <!-- Main Task View -->
-        <div id="main-view" class="hidden">
-            <!-- Referral Concepts Card -->
-            <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-5 rounded-3xl mb-6 border border-slate-700 shadow-2xl">
-                <div class="flex justify-between items-center mb-4">                    <h2 class="text-[10px] font-black text-gray-400 tracking-widest uppercase">My Referral Code</h2>
-                    <span id="my-ref-code" class="text-sky-400 font-black text-xl">------</span>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-slate-950/50 p-3 rounded-2xl border border-slate-800">
-                        <p class="text-[9px] text-gray-500 font-bold">REFERRED</p>
-                        <p id="ref-count" class="text-lg font-black">0</p>
+                        <p class="text-[8px] text-gray-500 font-bold">INVITES</p>
+                        <p id="ref-count" class="font-black">0</p>
                     </div>
-                    <div class="bg-slate-950/50 p-3 rounded-2xl border border-slate-800">
-                        <p class="text-[9px] text-gray-500 font-bold">TOTAL EARNED</p>
-                        <p class="text-lg font-black text-green-400">₱<span id="ref-earned">0.00</span></p>
+                    <div class="bg-slate-950/40 p-2 rounded-2xl">
+                        <p class="text-[8px] text-gray-500 font-bold">EARNED</p>
+                        <p class="font-black text-green-400">₱<span id="ref-earned">0.00</span></p>
                     </div>
                 </div>
-                <p class="text-[9px] text-sky-500 mt-4 text-center font-bold">Get 20% commission on every friend's task reward!</p>
             </div>
 
             <!-- Task Input -->
-            <section class="bg-slate-800/40 p-5 rounded-3xl border border-slate-700 mb-8">
-                <h3 class="text-sm font-black mb-4 text-sky-400 uppercase tracking-widest italic">Activate FB Task</h3>
+            <section class="glass-card p-5 rounded-3xl mb-8">
+                <h3 class="text-xs font-black mb-4 text-sky-400 uppercase italic">Add Facebook Task</h3>
                 <div class="space-y-3">
-                    <input id="reg-link" type="text" placeholder="https://facebook.com/your-page" class="w-full p-4 rounded-2xl bg-slate-900 border border-slate-700 text-sm focus:ring-2 ring-sky-500 outline-none">
-                    <input id="reg-def" type="text" placeholder="Task Definition (e.g. Follow Page for 30s)" class="w-full p-4 rounded-2xl bg-slate-900 border border-slate-700 text-sm focus:ring-2 ring-sky-500 outline-none">
-                    <button onclick="handleRegisterTask()" class="w-full bg-sky-600 hover:bg-sky-500 py-4 rounded-2xl font-black text-sm shadow-lg">REGISTER LINK (₱1.00 / 100 VISITS)</button>
-                    <p class="text-[10px] text-gray-500 text-center font-bold italic">Note: First 5 follow tasks are FREE!</p>
+                    <input id="reg-link" type="text" placeholder="Facebook Link URL" class="w-full p-4 rounded-2xl bg-slate-900 border border-slate-700 text-sm outline-none focus:ring-1 ring-sky-500">
+                    <input id="reg-def" type="text" placeholder="Definition (e.g. Follow my profile)" class="w-full p-4 rounded-2xl bg-slate-900 border border-slate-700 text-sm outline-none focus:ring-1 ring-sky-500">
+                    <button onclick="handleRegisterTask()" class="w-full bg-sky-600 hover:bg-sky-500 py-4 rounded-2xl font-black text-sm transition">REGISTER (₱1.00 / 100 VISITS)</button>
+                    <p class="text-[9px] text-gray-500 text-center font-bold uppercase">First 5 Tasks are Free!</p>
                 </div>
             </section>
-            <h2 class="text-xs font-black mb-4 text-gray-400 tracking-widest uppercase">Available Task Section</h2>
+
+            <h2 class="text-xs font-black mb-4 text-gray-400 tracking-widest uppercase ml-2">Tasks Marketplace</h2>
             <div id="tasks-list" class="space-y-3"></div>
         </div>
 
-        <!-- Deposit Section -->
+        <!-- Deposit View -->
         <div id="deposit-view" class="hidden space-y-4">
-            <h2 class="text-lg font-black italic mb-4">DEPOSIT PORTAL</h2>
-            <div class="bg-slate-800 p-5 rounded-3xl border border-slate-700 space-y-4">
-                <div class="flex justify-between items-center text-sm border-b border-slate-700 pb-2">
-                    <span class="text-gray-400 font-bold">GCash</span>
-                    <span class="font-mono text-sky-400">09952533453</span>
-                </div>
-                <div class="flex justify-between items-center text-sm border-b border-slate-700 pb-2">
-                    <span class="text-gray-400 font-bold">FaucetPay</span>
-                    <span class="font-mono text-sky-400 text-xs">otico.isai2@gmail.com</span>
-                </div>
-                <div class="flex justify-between items-center text-sm">
-                    <span class="text-gray-400 font-bold">PayPal</span>
-                    <span class="font-mono text-sky-400 text-xs">otico.isai2@gmail.com</span>
-                </div>
+            <h2 class="text-lg font-black italic">DEPOSIT FUNDS</h2>
+            <div class="glass-card p-5 rounded-3xl space-y-3 text-sm">
+                <p>GCash: <span class="text-sky-400 font-mono">09952533453</span></p>
+                <p>FaucetPay: <span class="text-sky-400 font-mono">otico.isai2@gmail.com</span></p>
+                <p>PayPal: <span class="text-sky-400 font-mono">otico.isai2@gmail.com</span></p>
             </div>
-            <div class="space-y-3 pt-4">
-                <input id="dep-name" type="text" placeholder="Your Name" class="w-full p-4 rounded-2xl bg-slate-800 border border-slate-700 text-sm">
-                <input id="dep-ref" type="text" placeholder="Reference Number" class="w-full p-4 rounded-2xl bg-slate-800 border border-slate-700 text-sm">
-                <input id="dep-amount" type="number" placeholder="Amount PHP" class="w-full p-4 rounded-2xl bg-slate-800 border border-slate-700 text-sm">
-                <button onclick="handleDeposit()" class="w-full bg-green-600 py-4 rounded-2xl font-black shadow-lg">SUBMIT DEPOSIT</button>
-            </div>
-        </div>
-
-        <!-- Chat View -->
-        <div id="chat-view" class="hidden flex flex-col h-[65vh]">
-            <h2 class="text-sm font-black mb-4 uppercase tracking-widest">Global Community</h2>
-            <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 p-4 bg-slate-950 rounded-3xl mb-4 border border-slate-800"></div>
-            <div class="flex gap-2">
-                <input id="chat-input" type="text" placeholder="Write a message..." class="flex-1 p-4 rounded-2xl bg-slate-800 border border-slate-700 text-sm">
-                <button onclick="sendChatMessage()" class="bg-sky-600 px-6 rounded-2xl font-black">SEND</button>
+            <div class="space-y-3">
+                <input id="dep-name" type="text" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-slate-800 border border-slate-700">
+                <input id="dep-ref" type="text" placeholder="Reference Number" class="w-full p-4 rounded-2xl bg-slate-800 border border-slate-700">
+                <input id="dep-amount" type="number" placeholder="Amount PHP" class="w-full p-4 rounded-2xl bg-slate-800 border border-slate-700">
+                <button onclick="handleDeposit()" class="w-full bg-green-600 py-4 rounded-2xl font-black">SUBMIT TO ADMIN</button>
             </div>
         </div>
 
         <!-- Profile View -->
         <div id="profile-view" class="hidden space-y-6">
-            <div class="bg-slate-800 p-5 rounded-3xl border border-slate-700">
-                <h3 class="font-black text-xs text-sky-400 mb-4 uppercase tracking-widest">Registered Links</h3>
-                <div id="my-links-list" class="space-y-3"></div>
+            <div class="glass-card p-5 rounded-3xl">
+                <h3 class="font-black text-xs text-sky-400 mb-4 uppercase">My Registered Links</h3>
+                <div id="my-links-list" class="space-y-2"></div>
             </div>
-            <div class="bg-slate-800 p-5 rounded-3xl border border-slate-700">
-                <h3 class="font-black text-xs text-sky-400 mb-4 uppercase tracking-widest">Apply Referral Code</h3>
-                <input id="input-ref" type="text" maxlength="6" placeholder="ENTER 6-CHAR CODE" class="w-full p-4 rounded-2xl bg-slate-950 border border-slate-700 mb-4 text-center font-black tracking-widest">
-                <button onclick="applyReferral()" class="w-full bg-sky-600 py-4 rounded-2xl font-black">APPLY NOW</button>
+            <div class="glass-card p-5 rounded-3xl">
+                <h3 class="font-black text-xs text-sky-400 mb-2 uppercase tracking-widest text-center">Redeem Referral</h3>
+                <input id="input-ref" type="text" maxlength="6" placeholder="6-LETTER CODE" class="w-full p-4 rounded-2xl bg-slate-950 border border-slate-700 mb-4 text-center font-black tracking-widest">
+                <button onclick="applyReferral()" class="w-full bg-sky-600 py-4 rounded-2xl
+
+font-black">APPLY CODE</button>
             </div>
         </div>
 
-        <!-- Admin Terminal -->
-        <div id="admin-view" class="hidden space-y-6">
-            <h2 class="text-xl font-black text-red-500 uppercase italic">Admin Terminal</h2>
-            <div class="bg-red-950/20 border border-red-900/40 p-5 rounded-3xl space-y-3">
-                <p class="text-[10px] font-bold text-red-400">POST GLOBAL ADMIN TASK (100k Capacity)</p>
-                <input id="adm-link" type="text" placeholder="FB Link" class="w-full p-3 rounded-xl bg-slate-950 text-sm">
+        <!-- Chat View -->
+        <div id="chat-view" class="hidden flex flex-col h-[60vh]">
+            <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 p-4 bg-slate-950/50 rounded-3xl mb-4 border border-slate-800"></div>
+            <div class="flex gap-2">
+                <input id="chat-input" type="text" placeholder="Message community..." class="flex-1 p-4 rounded-2xl bg-slate-800 border border-slate-700 text-sm">
+                <button onclick="sendChatMessage()" class="bg-sky-600 px-6 rounded-2xl font-black uppercase text-xs">Send</button>
+            </div>
+        </div>
+
+        <!-- Admin View -->
+        <div id="admin-view" class="hidden space-y-4">
+            <h2 class="text-lg font-black text-red-500 uppercase italic">Admin Panel</h2>
+            <div class="bg-red-950/20 border border-red-900/30 p-4 rounded-3xl space-y-3">
+                <p class="text-[10px] font-bold">GLOBAL AUTO TASK (100k CAPACITY)</p>
+                <input id="adm-link" type="text" placeholder="URL" class="w-full p-3 rounded-xl bg-slate-950 text-sm">
                 <input id="adm-def" type="text" placeholder="Definition" class="w-full p-3 rounded-xl bg-slate-950 text-sm">
-                <button onclick="postAdminTask()" class="w-full bg-red-600 py-3 rounded-xl font-black text-sm">POST TASK (₱0.021 REWARD)</button>
+                <button onclick="postAdminTask()" class="w-full bg-red-600 py-3 rounded-xl font-black">POST ADMIN TASK (₱0.021)</button>
             </div>
-            <div id="admin-deposits" class="space-y-3">
-                <h3 class="font-black text-xs uppercase tracking-widest">Pending Approvals</h3>
-            </div>
+            <div id="admin-deposits" class="space-y-2"></div>
         </div>
     </main>
 
-    <!-- Task Execution Overlay -->
+    <!-- Task Execution Modal -->
     <div id="task-modal" class="fixed inset-0 bg-slate-950 z-[200] hidden flex flex-col items-center justify-center p-8 text-center">
-        <h2 class="text-2xl font-black text-sky-400 italic mb-2 uppercase">Performing Task</h2>
-        <p id="task-modal-def" class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-10"></p>
-        
-        <div class="relative w-40 h-40 flex items-center justify-center mb-10">
-            <div class="absolute inset-0 border-4 border-sky-500/20 rounded-full"></div>
-            <div id="timer" class="text-6xl font-black">30</div>
+        <h2 class="text-3xl font-black text-sky-400 mb-2 italic">FOLLOWING...</h2>
+        <p id="task-modal-def" class="text-gray-400 text-xs font-bold uppercase mb-10"></p>
+        <div class="relative w-48 h-48 flex items-center justify-center mb-10 border-4 border-sky-500/20 rounded-full">
+            <div id="timer" class="text-7xl font-black">30</div>
         </div>
-
-        <p class="text-[10px] text-red-500 font-black animate-pulse uppercase mb-8">Follow, Like, and Comment within 30 seconds!</p>
-        
-        <button id="fb-redirect-btn" class="w-full max-w-xs bg-blue-600 py-5 rounded-3xl font-black text-xl shadow-2xl shadow-blue-900/50 uppercase italic tracking-tighter">Redirect to Facebook</button>
+        <p class="text-[10px] text-red-500 font-bold uppercase animate-pulse mb-8">Follow + Like + Comment for Reward!</p>
+        <button id="fb-redirect-btn" class="w-full max-w-xs bg-blue-600 py-5 rounded-3xl font-black text-xl shadow-2xl">GO TO FACEBOOK</button>
     </div>
 
-    <!-- Bottom Navbar -->
-    <nav class="fixed bottom-0 w-full bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 grid grid-cols-5 p-3 z-[150]">
-        <button onclick="showView('main')" class="flex flex-col items-center gap-1 nav-btn" id="nav-main">
+    <!-- Navigation -->
+    <nav class="fixed bottom-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 grid grid-cols-5 p-3 z-[150]">
+        <button onclick="showView('main')" class="nav-btn flex flex-col items-center" id="nav-main">
             <span class="text-[9px] font-black uppercase">Tasks</span>
         </button>
-        <button onclick="showView('deposit')" class="flex flex-col items-center gap-1 nav-btn" id="nav-deposit">
-            <span class="text-[9px] font-black uppercase">Deposit</span>
+        <button onclick="showView('deposit')" class="nav-btn flex flex-col items-center" id="nav-deposit">
+            <span class="text-[9px] font-black uppercase">Wallet</span>
         </button>
-        <button onclick="showView('chat')" class="flex flex-col items-center gap-1 nav-btn" id="nav-chat">
+        <button onclick="showView('chat')" class="nav-btn flex flex-col items-center" id="nav-chat">
             <span class="text-[9px] font-black uppercase">Chat</span>
         </button>
-        <button onclick="showView('profile')" class="flex flex-col items-center gap-1 nav-btn" id="nav-profile">
+        <button onclick="showView('profile')" class="nav-btn flex flex-col items-center" id="nav-profile">
             <span class="text-[9px] font-black uppercase">Profile</span>
         </button>
-        <button onclick="checkAdmin()" class="flex flex-col items-center gap-1 nav-btn" id="nav-admin">
+        <button onclick="checkAdmin()" class="nav-btn flex flex-col items-center" id="nav-admin">
             <span class="text-[9px] font-black uppercase text-red-500">Admin</span>
         </button>
     </nav>
