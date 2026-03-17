@@ -192,7 +192,7 @@ window.startTask = (taskId, url, reward) => {
     triggerInterstitial(); // Monetag 1
     
     // Adsgram (Reward Ad)
-    const AdController = window.Adsgram?.init({ blockId: "24438" });
+    const AdController = window.Adsgram?.init({ blockId: "25300", "25297", "25298" , "25299" });
     AdController?.show().then(() => {
         proceedToFacebook(taskId, url, reward);
     }).catch(() => {
